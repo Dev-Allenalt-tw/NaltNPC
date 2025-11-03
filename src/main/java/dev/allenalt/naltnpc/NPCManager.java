@@ -1,6 +1,7 @@
 package dev.allenalt.naltnpc;
 
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -82,12 +83,13 @@ public class NPCManager {
         NPCData data = npcs.get(id);
         if (data != null) {
             Location hologramLoc = data.getLocation().clone().add(0, 2.5, 0);
-            Entity hologram = hologramLoc.getWorld().spawnEntity(hologramLoc, EntityType.ARMOR_STAND);
+            ArmorStand hologram = (ArmorStand) hologramLoc.getWorld().spawnEntity(hologramLoc, EntityType.ARMOR_STAND);
             hologram.setCustomName(text);
             hologram.setCustomNameVisible(true);
             hologram.setGravity(false);
             hologram.setInvulnerable(true);
             hologram.setVisible(false);
+            hologram.setMarker(true);
             data.setHologram(hologram);
         }
     }
