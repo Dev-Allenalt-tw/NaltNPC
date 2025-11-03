@@ -36,6 +36,9 @@ public class NaltNPC extends JavaPlugin {
         // Load NPCs from config
         loadNPCs();
         
+        // Register tab completer
+        getCommand("npc").setTabCompleter(new NPCTabCompleter(npcManager));
+        
         getLogger().info("NaltNPC plugin loaded successfully!");
     }
 
