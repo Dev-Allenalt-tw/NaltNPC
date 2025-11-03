@@ -5,6 +5,9 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NPCData {
     
     private final String id;
