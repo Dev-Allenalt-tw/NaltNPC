@@ -17,6 +17,7 @@ public class NPCData {
     private Location location;
     private ArmorStand hologram;
     private boolean lookAtPlayers;
+    private List<NPCAction> actions;
 
     public NPCData(String id, EntityType type, String name, Entity entity, Location location) {
         this.id = id;
@@ -26,6 +27,7 @@ public class NPCData {
         this.location = location;
         this.hologram = null;
         this.lookAtPlayers = false;
+        this.actions = new ArrayList<>();
     }
 
     public String getId() {
@@ -77,5 +79,39 @@ public class NPCData {
 
     public void setLookAtPlayers(boolean lookAtPlayers) {
         this.lookAtPlayers = lookAtPlayers;
+    }
+
+    public void addAction(String executorType, String command) {
+        actions.add(new NPCAction(executorType, command));
+    }
+
+    public void clearActions() {
+        actions.clear();
+    }
+
+    public List<NPCAction> getActions() {
+        return new ArrayList<>(actions);
+    }
+
+    public int getActionCount() {
+        return actions.size();
+    }
+
+    public static class NPCAction {
+        private final String executorType;
+        private final String command;
+
+        public NPCAction(String executorType, String command) {
+            this.executorType = executorType;
+            this.command = command;
+        }
+
+        public String getExecutorType() {
+            return executorType;
+        }
+
+        public String getCommand() {
+            return command;
+        }
     }
 }
