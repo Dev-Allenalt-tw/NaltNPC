@@ -30,8 +30,17 @@ public class NPCManager {
         entity.setCustomNameVisible(true);
         entity.setGravity(false);
         entity.setInvulnerable(true);
+        entity.setPersistent(true);
+        
+        // Prevent NPC from moving
+        if (entity instanceof org.bukkit.entity.LivingEntity) {
+            org.bukkit.entity.LivingEntity living = (org.bukkit.entity.LivingEntity) entity;
+            living.setAI(false);
+            living.setCollidable(false);
+        }
         
         NPCData data = new NPCData(id, type, name, entity, location);
+        data.setLookAtPlayers(false); // Default to false
         npcs.put(id, data);
     }
 
