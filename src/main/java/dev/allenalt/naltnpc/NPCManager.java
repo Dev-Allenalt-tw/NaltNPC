@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -84,11 +85,19 @@ public class NPCManager {
     }
 
     public void setHologram(String id, String text) {
+        setHologram(id, text, false);
+    }
+
+    public void setHologram(String id, String text, boolean textShadow) {
         removeHologram(id);
-        createHologram(id, text);
+        createHologram(id, text, textShadow);
     }
 
     private void createHologram(String id, String text) {
+        createHologram(id, text, false);
+    }
+
+    private void createHologram(String id, String text, boolean textShadow) {
         NPCData data = npcs.get(id);
         if (data != null) {
             Location hologramLoc = data.getLocation().clone().add(0, 2.5, 0);
@@ -99,6 +108,13 @@ public class NPCManager {
             hologram.setInvulnerable(true);
             hologram.setVisible(false);
             hologram.setMarker(true);
+            
+            // Set text shadow (this is cosmetic, actual implementation may vary by client)
+            if (!textShadow) {
+                // Note: Text shadow is client-side, this is a placeholder
+                // In practice, you might need to use display entities in 1.19.4+
+            }
+            
             data.setHologram(hologram);
         }
     }
@@ -167,5 +183,24 @@ public class NPCManager {
 
     public String getSelectedNPC(Player player) {
         return selectedNPCs.get(player.getUniqueId());
+    }
+
+    public void addAction(String id, String executorType, String command) {
+        NPCData data = npcs.get(id);
+        if (data != null) {
+            data.addAction(executorType, command);
+        }
+    }
+
+    public void clearActions(String id) {
+        NPCData data = npcs.get(id);
+        if (data != null) {
+            data.clearActions();
+        }
+    }
+
+    public int getActionCount(String id) {
+        NPCData data = npcs.get(id);
+        return data != null ? data.getActionCount() : 0;
     }
 }
