@@ -1,6 +1,7 @@
 package dev.allenalt.naltnpc;
 
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 
@@ -11,7 +12,7 @@ public class NPCData {
     private String name;
     private Entity entity;
     private Location location;
-    private Entity hologram;
+    private ArmorStand hologram;
     private boolean lookAtPlayers;
 
     public NPCData(String id, EntityType type, String name, Entity entity, Location location) {
@@ -59,11 +60,11 @@ public class NPCData {
         this.location = location;
     }
 
-    public Entity getHologram() {
+    public ArmorStand getHologram() {
         return hologram;
     }
 
-    public void setHologram(Entity hologram) {
+    public void setHologram(ArmorStand hologram) {
         this.hologram = hologram;
     }
 
