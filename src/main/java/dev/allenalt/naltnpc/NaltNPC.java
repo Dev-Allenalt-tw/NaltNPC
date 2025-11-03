@@ -124,6 +124,8 @@ public class NaltNPC extends JavaPlugin {
             case "remove":
             case "delete":
                 return handleRemove(player, args);
+            case "action":
+                return handleAction(player, args);
             default:
                 sendHelp(player);
                 return true;
@@ -178,36 +180,49 @@ public class NaltNPC extends JavaPlugin {
     }
 
     private boolean handleHologram(Player player, String[] args) {
-        if (args.length < 3) {
-            player.sendMessage(ChatColor.RED + "Usage: /npc hologram <add/set/remove> <text>");
+        if (args.length < 4) {
+            player.sendMessage(ChatColor.RED + "Usage: /npc hologram <id> <add/set/remove> <text>");
             return true;
         }
 
-        String action = args[1].toLowerCase();
-        String selectedNPC = npcManager.getSelectedNPC(player);
+        String id = args[1];
+        String action = args[2].toLowerCase();
 
-        if (selectedNPC == null) {
-            player.sendMessage(ChatColor.RED + "No NPC selected! Right-click an NPC first.");
+        if (!npcManager.npcExists(id)) {
+            player.sendMessage(ChatColor.RED + "NPC with ID '" + id + "' does not exist!");
             return true;
         }
 
         StringBuilder textBuilder = new StringBuilder();
-        for (int i = 2; i < args.length; i++) {
+        for (int i = 3; i < args.length; i++) {
             textBuilder.append(args[i]).append(" ");
         }
         String text = ChatColor.translateAlternateColorCodes('&', textBuilder.toString().trim());
 
         switch (action) {
             case "add":
-                npcManager.addHologramLine(selectedNPC, text);
+                npcManager.addHologramLine(id, text);
                 player.sendMessage(ChatColor.GREEN + "Hologram line added!");
                 break;
             case "set":
-                npcManager.setHologram(selectedNPC, text);
-                player.sendMessage(ChatColor.GREEN + "Hologram set!");
+                boolean textShadow = false;
+                // Check if text_shadow parameter exists
+                if (args.length > 4 && args[3].equalsIgnoreCase("text_shadow")) {
+                    if (args.length > 5) {
+                        textShadow = Boolean.parseBoolean(args[4]);
+                        // Rebuild text without text_shadow parameters
+                        textBuilder = new StringBuilder();
+                        for (int i = 5; i < args.length; i++) {
+                            textBuilder.append(args[i]).append(" ");
+                        }
+                        text = ChatColor.translateAlternateColorCodes('&', textBuilder.toString().trim());
+                    }
+                }
+                npcManager.setHologram(id, text, textShadow);
+                player.sendMessage(ChatColor.GREEN + "Hologram set with text_shadow: " + textShadow);
                 break;
             case "remove":
-                npcManager.removeHologram(selectedNPC);
+                npcManager.removeHologram(id);
                 player.sendMessage(ChatColor.GREEN + "Hologram removed!");
                 break;
             default:
@@ -362,6 +377,71 @@ public class NaltNPC extends JavaPlugin {
         saveNPCs();
 
         player.sendMessage(ChatColor.GREEN + "NPC '" + id + "' removed!");
+        return true;
+    }
+
+    private boolean handleAction(Player player, String[] args) {
+        if (args.length < 5) {
+            player.sendMessage(ChatColor.RED + "Usage: /npc action <add/set/remove> <id> <CONSOLE/PLAYER/SERVER> <command>");
+            return true;
+        }
+
+        String action = args[1].toLowerCase();
+        String id = args[2];
+        String executorType = args[3].toUpperCase();
+
+        if (!npcManager.npcExists(id)) {
+            player.sendMessage(ChatColor.RED + "NPC with ID '" + id + "' does not exist!");
+            return true;
+        }
+
+        if (!executorType.equals("CONSOLE") && !executorType.equals("PLAYER") && !executorType.equals("SERVER")) {
+            player.sendMessage(ChatColor.RED + "Invalid executor type! Use CONSOLE, PLAYER, or SERVER.");
+            return true;
+        }
+
+        StringBuilder commandBuilder = new StringBuilder();
+        for (int i = 4; i < args.length; i++) {
+            commandBuilder.append(args[i]).append(" ");
+        }
+        String command = commandBuilder.toString().trim();
+
+        switch (action) {
+            case "add":
+                npcManager.addAction(id, executorType, command);
+                player.sendMessage(ChatColor.GREEN + "Action added to NPC '" + id + "'!");
+                
+                // Save to config
+                int actionIndex = npcManager.getActionCount(id) - 1;
+                String path = "npcs." + id + ".actions." + actionIndex;
+                npcsConfig.set(path + ".type", executorType);
+                npcsConfig.set(path + ".command", command);
+                saveNPCs();
+                break;
+            case "set":
+                npcManager.clearActions(id);
+                npcManager.addAction(id, executorType, command);
+                player.sendMessage(ChatColor.GREEN + "Action set for NPC '" + id + "'!");
+                
+                // Save to config
+                npcsConfig.set("npcs." + id + ".actions", null);
+                npcsConfig.set("npcs." + id + ".actions.0.type", executorType);
+                npcsConfig.set("npcs." + id + ".actions.0.command", command);
+                saveNPCs();
+                break;
+            case "remove":
+                npcManager.clearActions(id);
+                player.sendMessage(ChatColor.GREEN + "All actions removed from NPC '" + id + "'!");
+                
+                // Save to config
+                npcsConfig.set("npcs." + id + ".actions", null);
+                saveNPCs();
+                break;
+            default:
+                player.sendMessage(ChatColor.RED + "Invalid action! Use add, set, or remove.");
+                return true;
+        }
+
         return true;
     }
 
