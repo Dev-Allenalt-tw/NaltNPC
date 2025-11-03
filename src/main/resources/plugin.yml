@@ -1,0 +1,38 @@
+name: NaltNPC
+version: '${project.version}'
+main: dev.allenalt.naltnpc.NaltNPC
+api-version: '1.21'
+author: Dev_Allenalt_tw
+description: NPC plugin with hologram support
+website: https://github.com/Dev-Allenalt-tw/NaltNPC
+
+commands:
+  npc:
+    description: Main NPC command
+    usage: |
+      /npc create <id> <type> <name>
+      /npc hologram <add/set/remove> <text>
+      /npc look <id> <true/false>
+      /npc list
+      /npc teleport <id>
+      /npc movehere <id>
+      /npc move <id> <x> <y> <z>
+    permission: naltnpc.admin
+    permission-message: You don't have permission to use this command
+
+permissions:
+  naltnpc.admin:
+    description: Allows access to all NPC commands
+    default: op
+  naltnpc.create:
+    description: Allows creating NPCs
+    default: op
+  naltnpc.remove:
+    description: Allows removing NPCs
+    default: op
+  naltnpc.teleport:
+    description: Allows teleporting to NPCs
+    default: op
+  naltnpc.move:
+    description: Allows moving NPCs
+    default: op
