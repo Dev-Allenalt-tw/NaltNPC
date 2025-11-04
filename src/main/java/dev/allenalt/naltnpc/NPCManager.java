@@ -1,11 +1,14 @@
 package dev.allenalt.naltnpc;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Zombie;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -26,6 +29,12 @@ public class NPCManager {
     }
 
     public void createNPC(String id, EntityType type, String name, Location location) {
+        // PLAYER type NPCs cannot be spawned - show error
+        if (type == EntityType.PLAYER) {
+            plugin.getLogger().warning("Cannot create NPC with PLAYER type. PLAYER entities cannot be spawned.");
+            return;
+        }
+        
         Entity entity = location.getWorld().spawnEntity(location, type);
         entity.setCustomName(name);
         entity.setCustomNameVisible(true);
@@ -34,8 +43,8 @@ public class NPCManager {
         entity.setPersistent(true);
         
         // Prevent NPC from moving
-        if (entity instanceof org.bukkit.entity.LivingEntity) {
-            org.bukkit.entity.LivingEntity living = (org.bukkit.entity.LivingEntity) entity;
+        if (entity instanceof LivingEntity) {
+            LivingEntity living = (LivingEntity) entity;
             living.setAI(false);
             living.setCollidable(false);
         }
@@ -202,5 +211,30 @@ public class NPCManager {
     public int getActionCount(String id) {
         NPCData data = npcs.get(id);
         return data != null ? data.getActionCount() : 0;
+    }
+
+    public boolean setSkin(String id, String skinName) {
+        NPCData data = npcs.get(id);
+        if (data == null || data.getEntity() == null) {
+            return false;
+        }
+
+        Entity entity = data.getEntity();
+        
+        // Store skin name in NPCData for future reference
+        data.setSkinName(skinName);
+        
+        // Basic skin support - this is limited without NMS
+        // For full player skin support, you'd need to use NMS or a library like Citizens
+        
+        // For now, we can set custom name to indicate the skin
+        String currentName = entity.getCustomName();
+        if (currentName != null) {
+            entity.setCustomName(currentName + " §7[" + skinName + "]");
+        }
+        
+        plugin.getLogger().info("Skin '" + skinName + "' applied to NPC '" + id + "' (limited support)");
+        
+        return true;
     }
 }
