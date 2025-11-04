@@ -18,6 +18,7 @@ public class NPCData {
     private ArmorStand hologram;
     private boolean lookAtPlayers;
     private List<NPCAction> actions;
+    private String skinName;
 
     public NPCData(String id, EntityType type, String name, Entity entity, Location location) {
         this.id = id;
@@ -28,6 +29,7 @@ public class NPCData {
         this.hologram = null;
         this.lookAtPlayers = false;
         this.actions = new ArrayList<>();
+        this.skinName = null;
     }
 
     public String getId() {
@@ -95,6 +97,14 @@ public class NPCData {
 
     public int getActionCount() {
         return actions.size();
+    }
+
+    public String getSkinName() {
+        return skinName;
+    }
+
+    public void setSkinName(String skinName) {
+        this.skinName = skinName;
     }
 
     public static class NPCAction {
