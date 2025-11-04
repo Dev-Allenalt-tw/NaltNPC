@@ -25,7 +25,7 @@ public class NPCTabCompleter implements TabCompleter {
         if (args.length == 1) {
             // Main subcommands
             completions.addAll(Arrays.asList(
-                "create", "hologram", "look", "list", "teleport", "tp",
+                "create", "skin", "hologram", "look", "list", "teleport", "tp",
                 "movehere", "move", "remove", "delete", "action"
             ));
         } else if (args.length == 2) {
@@ -36,6 +36,7 @@ public class NPCTabCompleter implements TabCompleter {
                     // Suggest ID (player can type their own)
                     completions.add("<id>");
                     break;
+                case "skin":
                 case "hologram":
                 case "look":
                 case "teleport":
@@ -59,6 +60,10 @@ public class NPCTabCompleter implements TabCompleter {
                 case "create":
                     // Suggest all entity types
                     completions.addAll(getValidEntityTypes());
+                    break;
+                case "skin":
+                    // Suggest skin name placeholder
+                    completions.add("<skinName>");
                     break;
                 case "hologram":
                     // Suggest hologram actions
@@ -129,7 +134,7 @@ public class NPCTabCompleter implements TabCompleter {
         for (EntityType type : EntityType.values()) {
             // Filter out some unsuitable types
             if (type.isSpawnable() && type.isAlive() && 
-                type != EntityType.PLAYER && 
+                type != EntityType.PLAYER &&  // Cannot spawn PLAYER type
                 type != EntityType.ENDER_DRAGON &&
                 type != EntityType.WITHER) {
                 types.add(type.name());
