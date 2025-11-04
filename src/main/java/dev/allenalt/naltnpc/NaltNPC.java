@@ -108,6 +108,8 @@ public class NaltNPC extends JavaPlugin {
         switch (subCommand) {
             case "create":
                 return handleCreate(player, args);
+            case "skin":
+                return handleSkin(player, args);
             case "hologram":
                 return handleHologram(player, args);
             case "look":
@@ -176,6 +178,35 @@ public class NaltNPC extends JavaPlugin {
         saveNPCs();
 
         player.sendMessage(ChatColor.GREEN + "NPC '" + id + "' created successfully!");
+        return true;
+    }
+
+    private boolean handleSkin(Player player, String[] args) {
+        if (args.length < 3) {
+            player.sendMessage(ChatColor.RED + "Usage: /npc skin <id> <skinName>");
+            return true;
+        }
+
+        String id = args[1];
+        String skinName = args[2];
+
+        if (!npcManager.npcExists(id)) {
+            player.sendMessage(ChatColor.RED + "NPC with ID '" + id + "' does not exist!");
+            return true;
+        }
+
+        boolean success = npcManager.setSkin(id, skinName);
+        
+        if (success) {
+            // Save to config
+            npcsConfig.set("npcs." + id + ".skin", skinName);
+            saveNPCs();
+            player.sendMessage(ChatColor.GREEN + "Skin set to '" + skinName + "' for NPC '" + id + "'!");
+        } else {
+            player.sendMessage(ChatColor.RED + "Failed to set skin. This NPC type may not support skins.");
+            player.sendMessage(ChatColor.YELLOW + "Note: Only certain mob types support skin changes.");
+        }
+
         return true;
     }
 
